@@ -1,0 +1,13 @@
+{
+  mysql {
+    url: "user:pass@tcp(host:3306)/db"
+    table: "table"
+  }
+
+  parser {
+    baseUrl: "https://base.com/"
+    satelliteUrlPattern: "https://(www.)?base.com/[^/]+.html"
+  }
+
+  logLevel: "debug"
+}
