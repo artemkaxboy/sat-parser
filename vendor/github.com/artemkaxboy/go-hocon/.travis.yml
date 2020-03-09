@@ -1,0 +1,49 @@
+language: go
+
+branches:
+  only:
+    - master
+
+os:
+  - linux
+
+go:
+  - 1.13.x
+
+install:
+  # go-flags
+  - go get -d -v ./...
+  - go build -v ./...
+
+  # linting
+  - go get -v golang.org/x/lint/golint
+
+  # code coverage
+  - go get golang.org/x/tools/cmd/cover
+  - go get github.com/onsi/ginkgo/ginkgo
+  - go get github.com/modocache/gover
+  - if [ "$TRAVIS_SECURE_ENV_VARS" = "true" ]; then go get github.com/mattn/goveralls; fi
+
+script:
+  # go-flags
+  - $(exit $(gofmt -l . | wc -l))
+  - go test -v ./...
+
+  # linting
+  - go tool vet -all=true -v=true . || true
+  - $(go env GOPATH | awk 'BEGIN{FS=":"} {print $1}')/bin/golint ./...
+
+  # code coverage
+  - $(go env GOPATH | awk 'BEGIN{FS=":"} {print $1}')/bin/ginkgo -r -cover
+  - $(go env GOPATH | awk 'BEGIN{FS=":"} {print $1}')/bin/gover
+  - if [ "$TRAVIS_SECURE_ENV_VARS" = "true" ]; then $(go env GOPATH | awk 'BEGIN{FS=":"} {print $1}')/bin/goveralls -coverprofile=gover.coverprofile -service=travis-ci -repotoken $COVERALL_REPO_TOKEN; fi
+
+env:
+  # coveralls.io
+  secure: "mNKOYgSko/cBNdQF5z9v1sHIL51FkcrW/LTcrYvM6BCd3eUqjzWxB39sdS4UNd+d/SRkLPI2TXsqrj9QKtliIwLaxRzo98i2ZLlhyKMEnsFof+8vHPOiFKi3UoP4O1hAZAADq8zKGkOo0LiblSx88R3aPU+yG4g9ph8DwYBSXAPdfSjiM1COngYlQGedoxuyMYB3xhtpjtAo4WBJUuJvoo3JWvN2OKHnveMPad3vwwykPuaGw22A7pTpsYYfcYnYmTdYBblmH3JkCAnRUMCXDbAR3WhF2nU5mVgMbqx8lmZ8zv3PCsSJTshRXWUaPXJk8PEOyDMI99SGia/3700M9zOFIogH7lpztw31ypoeYCmdRL1DPAzthqq+KlF8jmv/1LoqNJ0OKxCwhviXuL15uoKLZH4dXR3TSdwc16Axj174XDpqyvUqZ8s5U2TjBinKWIA0WII3lDoxmU8DJELoK0MaN0Yfx7MJ7Kquqks3hvq8BrylQyo/hJkt3C3aVQKjA7Pr/FG5qqdbdFM+kDA1PdQA7KvLobqFF3TUYZBWX8Ov0hAnAay7rZDSKCZ5Axa1q52jaWG8WPuDO8KRgtULB1HHwofLextSFDwvkBfkyNOLt9hBrtKjVXjSDx5tXTD9zE1VeuDcJxu9N3NB5ee9P7DQQkQEDokhqqv3hGptZtQ="
+
+# thanks to
+# https://github.com/umputun/go-flags/blob/master/.travis.yml
+
+# encryption-keys
+# https://docs.travis-ci.com/user/encryption-keys/
