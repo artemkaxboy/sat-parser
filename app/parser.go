@@ -3,8 +3,8 @@ package main
 import (
 	"fmt"
 	"github.com/PuerkitoBio/goquery"
-	"github.com/djimenez/iconv-go"
 	log "github.com/sirupsen/logrus"
+	"golang.org/x/net/html/charset"
 	"io"
 	"net/http"
 	"regexp"
@@ -13,7 +13,6 @@ import (
 	"strings"
 )
 
-const targetEncoding string = "utf-8"
 const satellitePositionPattern string = "^(?i)([0-9.]+)°([EW])$"
 
 var (
@@ -151,19 +150,13 @@ func closeReader(response *http.Response) error {
 	return response.Body.Close()
 }
 
-func convertIfNeeded(response *http.Response) (io.Reader, error) {
+func getUtf8Reader(response *http.Response) (io.Reader, error) {
 	contentType := response.Header.Get("Content-Type")
-	regex := regexp.MustCompile(`text/html; charset=(.+)$`)
-	matches := regex.FindAllStringSubmatch(contentType, -1)
-	if matches == nil || matches[0][1] == targetEncoding {
-		return response.Body, nil
+	reader, err := charset.NewReader(response.Body, contentType)
+	if err != nil {
+		return nil, fmt.Errorf("cannot convert document to utf-8: %w", err)
 	}
 
-	reader, err := iconv.NewReader(response.Body, matches[0][1], targetEncoding)
-	if err != nil {
-		return nil, fmt.Errorf("cannot convert document (%s) to %s: %w", response.Request.RequestURI, targetEncoding, err)
-	}
-	log.Printf("document %s converted from %s to %s", response.Request.RequestURI, matches[0][1], targetEncoding)
 	return reader, nil
 }
 
@@ -218,7 +211,7 @@ func parseOnlinePage(url string, chData chan Satellite, chErr chan error, chCoun
 		}
 	}()
 
-	reader, err := convertIfNeeded(httpResponse)
+	reader, err := getUtf8Reader(httpResponse)
 	if err != nil {
 		chErr <- err
 		return
