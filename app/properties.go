@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/artemkaxboy/go-hocon"
-	"github.com/sirupsen/logrus"
+	log "github.com/sirupsen/logrus"
 )
 
 // Properties struct is used for loading and providing access to configuration file.
@@ -30,7 +30,10 @@ func getProperties() *Properties {
 	if props == nil {
 		props = &Properties{}
 		if err := hocon.LoadConfigFile("sat-parser.conf", props); err != nil {
-			logrus.WithError(err).Fatal("cannot load properties")
+			log.WithError(err).Error("cannot load properties, falling back to example values")
+			if err := hocon.LoadConfigFile("sat-parser.conf.example", props); err != nil {
+				log.WithError(err).Fatal("cannot load default properties")
+			}
 		}
 	}
 	return props
