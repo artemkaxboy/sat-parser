@@ -1,4 +1,4 @@
-module sat-parser
+module github.com/artemkaxboy/sat_parser
 
 go 1.13
 
