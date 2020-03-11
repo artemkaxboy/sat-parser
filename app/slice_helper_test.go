@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func makeSat(name string, position float32) Satellite {
+func makeSat(name string, position float64) Satellite {
 	sat := Satellite{}
 	_ = sat.SetName(name)
 	sat.SetPosition(position)

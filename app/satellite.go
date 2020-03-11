@@ -11,7 +11,7 @@ import (
 type Satellite struct {
 	Name     string  `db:"_name"`
 	URL      string  `db:"_url"`
-	Position float32 `db:"_position"`
+	Position float64 `db:"_position"`
 	Band     string  `db:"_band"`
 }
 
@@ -76,12 +76,12 @@ func (ptr *Satellite) GetURL() string {
 }
 
 // SetPosition sets position field as is.
-func (ptr *Satellite) SetPosition(position float32) {
+func (ptr *Satellite) SetPosition(position float64) {
 	ptr.Position = position
 }
 
 // GetPosition returns position field as is.
-func (ptr *Satellite) GetPosition() float32 {
+func (ptr *Satellite) GetPosition() float64 {
 	return ptr.Position
 }
 

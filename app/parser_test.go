@@ -255,7 +255,7 @@ func TestEPosition(t *testing.T) {
 
 	assert.Len(t, satellites, 1)
 	assert.Empty(t, errs)
-	assert.Equal(t, float32(116), satellites[0].GetPosition())
+	assert.Equal(t, float64(116), satellites[0].GetPosition())
 }
 
 func TestWPosition(t *testing.T) {
@@ -271,7 +271,7 @@ func TestWPosition(t *testing.T) {
 
 	assert.Len(t, satellites, 1)
 	assert.Empty(t, errs)
-	assert.Equal(t, float32(-116), satellites[0].GetPosition())
+	assert.Equal(t, float64(-116), satellites[0].GetPosition())
 }
 
 func TestEmptyName(t *testing.T) {
