@@ -88,7 +88,7 @@ func Parse(url string, reader io.Reader, chData chan Satellite, chErr chan error
 					position *= -1
 				}
 
-				satellite.SetPosition(float32(position))
+				satellite.SetPosition(position)
 				gotPosition = true
 			} else if !gotPosition {
 				err := fmt.Errorf("satellite doesn't have position neither previous satellite. Data: %s", data)
